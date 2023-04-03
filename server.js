@@ -300,6 +300,7 @@ app.get('/se_db/userstation_review', (req, res, next) => {
 
 })
 
+//get userstation marker
 app.get('/se_db/userstation_marker', (req, res, next) => {
 
   const query = `SELECT * FROM userstation 
@@ -314,8 +315,96 @@ app.get('/se_db/userstation_marker', (req, res, next) => {
 
 })
 
+//get userstation description
+app.get('/se_db/userstation_marker/description', (req, res, next) => {
+  const stationName = req.query.stationName;
+  const query = `SELECT * FROM userstation_description WHERE stationName = "${stationName}"
+  `;
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+    res.send(results);
+  });
+
+})
+//get userstation facilities
+app.get('/se_db/userstation_marker/facilities', (req, res, next) => {
+  const stationName = req.query.stationName;
+  const query = `SELECT * FROM userstation_facilities WHERE stationName = "${stationName}"
+  `;
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+    res.send(results);
+  });
+
+})
 
 
+//get userstation image
+app.get('/se_db/userstation_marker/image', (req, res, next) => {
+  const stationName = req.query.stationName;
+  const query = `SELECT * FROM userstation_image WHERE stationName = "${stationName}"
+  `;
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+    res.send(results);
+  });
+
+})
+
+
+//get bookmark
+app.get('/se_db/bookmark', (req, res, next) => {
+
+  const username = req.query.username;
+  const query = `SELECT * FROM bookmark WHERE username = "${username}"`;
+
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+    res.send(results);
+  });
+
+})
+
+
+//insert bookmark
+app.post('/se_db/bookmark/add', (req, res) => {
+
+  const stationName = req.body.stationName;
+  const review = req.body.review;
+  const time_open = req.body.time_open;
+  const time_close = req.body.time_close;
+  const image = req.body.image;
+  const username = req.body.username;
+  const value = [stationName, review, time_open, time_close, image, username]
+  const sql = 'INSERT INTO bookmark (stationName,review,time_open,time_close,image, username) VALUE ( ?, ?, ?, ?, ?, ? )';
+  connection.query(sql, value, (err, result) => {
+    if (err) {
+      console.log('Error fetching data: ', err);
+      res.status(500).json({
+        error: err
+      });
+    } else {
+      res.status(200).json({
+        result: "บันทึกข้อมูลแล้ว",
+        query: sql,
+        data: {
+          value
+        }
+      });
+    }
+  })
+})
+
+//delete bookmark
+app.delete('/se_db/bookmark/deleted', (req, res) => {
+  const stationName = req.body.stationName;
+  const username = req.body.username;
+  const query = `DELETE FROM bookmark WHERE username = '${username} AND stationName = '${stationName}'`;
+  connection.query(query, (error, results, fields) => {
+    if (error) throw error;
+    res.send(results);
+  });
+});
 
 
 // app.post('/se_db/account/:firstname/:lastname/:email/:username/:password/:phone/:icon/:point/:expirePoint', (req, res) => {
